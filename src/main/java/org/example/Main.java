@@ -3,6 +3,7 @@ package org.example;
 import io.javalin.Javalin;
 import org.example.Controller.UserController;
 import org.example.Controller.LoanController;
+import org.example.Controller.AuthController;
 import org.example.DAO.LoanDAO;
 import org.example.DAO.UserDAO;
 import org.example.Model.User;
@@ -11,6 +12,8 @@ import org.example.Service.UserService;
 import org.example.Util.ConnectionDB;
 
 import java.sql.*;
+
+import static org.example.Controller.AuthController.role;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -48,6 +51,14 @@ private static final String DROP_TABLES_SQL = """
             (4,'computer',false,'approve'),
             (5,'gameconsole',true,'reject'),
             (2,'car',true,'reject');
+            
+            INSERT INTO users_loans (username, userpass, userrole)
+                values ('charlie','1234','user'),
+                ('charles','4321','manager'),
+                ('ralph','2345','user'),
+                ('lupin','5432','manager'),
+                ('alonso','3456','user'),
+                ('lewis','6543','user');
         """;
     public static void main(String[] args) {
 
@@ -68,7 +79,11 @@ private static final String DROP_TABLES_SQL = """
         Javalin app = Javalin.create(config -> {
         }).start(7001);
 
+        app.get("/", ctx -> ctx.result(role));
         app.post("/register", userController::createUser);
+        app.post("/login", AuthController::login);
+        app.post("logout", AuthController::logout);
+        app.get("/checklogin", AuthController::checkLogin);
         app.get("/user/{id}", userController::getUserById);
         app.put("/user/{id}", userController::updateUser);
         app.get("/loans", loanController::getAllLoans);
@@ -77,7 +92,7 @@ private static final String DROP_TABLES_SQL = """
         app.put("/loans/{id}", loanController::updateLoan);
         app.put("/loans/{id}/{status}", loanController::updateStatusA);
 
-        User user = new User();
+        //User user = new User();
 
 //        String greet = user.getUserpass();
 //        app.get("/", ctx -> ctx.result(greet));

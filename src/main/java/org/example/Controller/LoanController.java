@@ -1,12 +1,15 @@
 package org.example.Controller;
 
-import io.javalin.Javalin;
+//import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.example.Model.Loan;
-import org.example.Model.User;
+//import org.example.Model.User;
 import org.example.Service.LoanService;
 
 import java.util.List;
+import java.util.Objects;
+
+import static org.example.Controller.AuthController.role;
 
 public class LoanController {
     public LoanService loanService;
@@ -16,8 +19,12 @@ public class LoanController {
     }
 
     public void getAllLoans(Context ctx){
-        List<Loan> allLoans = loanService.getAllLoans();
-        ctx.json(allLoans);
+        if(Objects.equals(role, "manager")){
+            List<Loan> allLoans = loanService.getAllLoans();
+            ctx.json(allLoans);
+        }else{
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }
     }
 
     public void getLoan(Context ctx){
