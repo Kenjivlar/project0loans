@@ -3,12 +3,12 @@ package org.example.Controller;
 //import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.example.Model.Loan;
-import org.example.Model.User;
-import org.example.Model.User;
+//import org.example.Model.User;
+//import org.example.Model.User;
 import org.example.Service.LoanService;
 
 import java.util.List;
-import java.util.Objects;
+//import java.util.Objects;
 
 import static org.example.Controller.AuthController.id_user;
 import static org.example.Controller.AuthController.role;

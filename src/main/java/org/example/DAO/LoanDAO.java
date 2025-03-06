@@ -1,7 +1,7 @@
 package org.example.DAO;
 
 import org.example.Model.Loan;
-import org.example.Model.User;
+//import org.example.Model.User;
 import org.example.Util.ConnectionDB;
 
 import java.sql.PreparedStatement;
