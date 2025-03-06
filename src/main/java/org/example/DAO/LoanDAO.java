@@ -85,6 +85,33 @@ public class LoanDAO {
     }
 
 
+    public List<Loan> getLoanById(int id, int id_user){
+        ConnectionDB connectionDB = new ConnectionDB();
+        List<Loan> loans = new ArrayList<>();
+        String sql = "SELECT id, id_user, title, completed, status FROM loan WHERE id = ? AND id_user = ?;";
+
+        try{
+
+            PreparedStatement preparedStatement = connectionDB.connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, id_user);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Loan loan = new Loan(
+                        rs.getInt("id"),
+                        rs.getInt("id_user"),
+                        rs.getString("title"),
+                        rs.getBoolean("completed"),
+                        rs.getString("status"));
+                loans.add(loan);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return loans;
+    }
+
+
 
 
 
@@ -92,7 +119,7 @@ public class LoanDAO {
     public List<Loan> getLoansById(int id_user){
         ConnectionDB connectionDB = new ConnectionDB();
         List<Loan> loans = new ArrayList<>();
-        String sql = "SELECT id, id_user, title, completed, status FROM public.loan WHERE id_user = ?;";
+        String sql = "SELECT id, id_user, title, completed, status FROM loan WHERE id_user = ?;";
 
         try{
 
@@ -124,6 +151,25 @@ public class LoanDAO {
             preparedStatement.setString(1, loan.title);
             preparedStatement.setBoolean(2, loan.completed);
             preparedStatement.setInt(3, id);
+            preparedStatement.executeUpdate();
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public void updateLoan(int id,int id_user, Loan loan){
+        ConnectionDB connectionFl = new ConnectionDB();
+        try{
+            String sql ="UPDATE loan SET title = ?, completed = ? WHERE id = ? AND id_user = ?";
+
+            PreparedStatement preparedStatement = connectionFl.connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, loan.title);
+            preparedStatement.setBoolean(2, loan.completed);
+            preparedStatement.setInt(3, id);
+            preparedStatement.setInt(4, id_user);
             preparedStatement.executeUpdate();
 
         }catch(SQLException e){

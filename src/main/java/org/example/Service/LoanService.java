@@ -25,6 +25,7 @@ public class LoanService {
     public List<Loan> getAllLoans(){
         return loanDAO.getAllLoans();
     }
+
     public List<Loan> getUserLoans(int id_user){
         return loanDAO.getLoansById(id_user);
     }
@@ -33,8 +34,16 @@ public class LoanService {
         return loanDAO.getLoanById(id);
     }
 
+    public List<Loan> getLoanById(int id, int id_user){
+        return loanDAO.getLoanById(id, id_user);
+    }
+
     public void updateLoan(int id, Loan loan){
         loanDAO.updateLoan(id, loan);
+    }
+
+    public void updateLoan(int id, int id_user, Loan loan){
+        loanDAO.updateLoan(id, id_user, loan);
     }
 
     public void updateStatusA(int id, String status){

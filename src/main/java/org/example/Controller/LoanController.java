@@ -3,7 +3,7 @@ package org.example.Controller;
 //import io.javalin.Javalin;
 import io.javalin.http.Context;
 import org.example.Model.Loan;
-//import org.example.Model.User;
+import org.example.Model.User;
 import org.example.Model.User;
 import org.example.Service.LoanService;
 
@@ -62,17 +62,20 @@ public class LoanController {
         if(role.equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             ctx.json(loanService.getLoanById(id));
+        }else if(role.equals("user")){
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            ctx.json(loanService.getLoanById(id, id_user));
         }else{
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }
 
     }
 
-    public void getUserLoans(Context ctx){
-        int id_user = Integer.parseInt(ctx.pathParam("id_user"));
-        List<Loan> userLoans = loanService.getUserLoans(id_user);
-        ctx.json(userLoans);
-    }
+//    public void getUserLoans(Context ctx){
+//        int id_user = Integer.parseInt(ctx.pathParam("id_user"));
+//        List<Loan> userLoans = loanService.getUserLoans(id_user);
+//        ctx.json(userLoans);
+//    }
 
     public void updateLoan(Context ctx){
         if(role.equals("manager")){
@@ -86,6 +89,19 @@ public class LoanController {
             loan.setCompleted(request.completed);
 
             loanService.updateLoan(id,loan);
+
+            ctx.status(201).json(loan);
+        }else if(role.equals("user")){
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            Loan request = ctx.bodyAsClass(Loan.class);
+
+            Loan loan = new Loan();
+
+            loan.setId(id);
+            loan.setTitle(request.title);
+            loan.setCompleted(request.completed);
+
+            loanService.updateLoan(id,id_user, loan);
 
             ctx.status(201).json(loan);
         }else{
