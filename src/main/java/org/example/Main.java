@@ -45,12 +45,12 @@ private static final String DROP_TABLES_SQL = """
         
 
             INSERT INTO loan (id_user, title, completed, status)
-            VALUES (2,'bike',true,'approve'),
-            (2,'house',false,'reject'),
+            VALUES (1,'bike',true,'approve'),
+            (1,'house',false,'reject'),
             (3,'car',true,'approve'),
             (4,'computer',false,'approve'),
             (5,'gameconsole',true,'reject'),
-            (2,'car',true,'reject');
+            (1,'car',true,'reject');
             
             INSERT INTO users_loans (username, userpass, userrole)
                 values ('charlie','1234','user'),
@@ -87,11 +87,13 @@ private static final String DROP_TABLES_SQL = """
         app.get("/user/{id}", userController::getUserById);
         app.put("/user/{id}", userController::updateUser);
         app.get("/loans", loanController::getAllLoans);
-        app.get("/loans/userid:/{id_user}", loanController::getUserLoans);
-        app.get("/loans/loanid:/{id}", loanController::getLoan);
+        //app.get("/loans/userid:/{id_user}", loanController::getUserLoans);
+        app.get("/loans/{id}", loanController::getLoan);
         app.put("/loans/{id}", loanController::updateLoan);
         app.put("/loans/{id}/{status}", loanController::updateStatusA);
+        app.post("/loans", loanController::createLoan);
 
+        role = "";
         //User user = new User();
 
 //        String greet = user.getUserpass();
@@ -107,7 +109,7 @@ private static final String DROP_TABLES_SQL = """
     private static void resetDatabase(){
             runSql(DROP_TABLES_SQL);
             runSql(CREATE_TABLES_SQL);
-//            runSql(INSERT_DATA_SQL);
+            runSql(INSERT_DATA_SQL);
     }
     private static void runSql(String sql) {
         ConnectionDB connectionDB = new ConnectionDB();

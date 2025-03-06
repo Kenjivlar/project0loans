@@ -17,6 +17,24 @@ public class LoanDAO {
     public LoanDAO(ConnectionDB connection) {
     }
 
+    public void createLoan(Loan loan){
+        ConnectionDB connectionDB = new ConnectionDB();
+        try{
+            String sql = "INSERT INTO loan (id_user, title, completed) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = connectionDB.connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, loan.getId_user());
+            preparedStatement.setString(2, loan.getTitle());
+            preparedStatement.setBoolean(3, loan.isCompleted());
+
+            preparedStatement.executeUpdate();
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+
+        }
+    }
+
     public List<Loan> getAllLoans(){
         ConnectionDB connectionDB = new ConnectionDB();
         List<Loan> loans = new ArrayList<>();

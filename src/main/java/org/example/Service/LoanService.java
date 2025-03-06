@@ -13,6 +13,15 @@ public class LoanService {
     public LoanService(LoanDAO loanDAO){
         this.loanDAO = loanDAO;
     }
+    public boolean createLoan(int id_user, String title, boolean completed){
+        Loan loan = new Loan();
+        loan.setId_user(id_user);
+        loan.setTitle(title);
+        loan.setCompleted(completed);
+        loanDAO.createLoan(loan);
+        return true;
+    }
+
     public List<Loan> getAllLoans(){
         return loanDAO.getAllLoans();
     }

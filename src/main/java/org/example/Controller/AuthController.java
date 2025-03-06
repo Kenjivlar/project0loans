@@ -12,6 +12,7 @@ import java.sql.SQLException;
 public class AuthController {
 
     public static String role;
+    public static int id_user;
     public static void login(Context ctx){
         User requestUser = ctx.bodyAsClass(User.class);
         if (requestUser.getUsername() == null || requestUser.getUserpass() == null) {
@@ -35,9 +36,11 @@ public class AuthController {
         // If valid, start a session
         HttpSession session = ctx.req().getSession(true);
         session.setAttribute("user", dbUser);
-        session.setAttribute("username", dbUser.getUsername());
-        session.setAttribute("userrole", dbUser.getUserrole());
-        role = String.valueOf(ctx.json(session.getAttribute("userrole")));
+//        session.setAttribute("username", dbUser.getUsername());
+        session.setAttribute("id user", dbUser.getId());
+        session.setAttribute("role", dbUser.getUserrole());
+        role = String.valueOf(session.getAttribute("role"));
+        id_user = (int) session.getAttribute("id user");
 
         ctx.status(200).json("{\"message\":\"Login successful\"}");
     }
@@ -47,6 +50,7 @@ public class AuthController {
         if (session != null) {
             session.invalidate();
         }
+        role = "";
         ctx.status(200).json("{\"message\":\"Logged out\"}");
     }
 
@@ -79,7 +83,7 @@ public class AuthController {
         if (session != null && session.getAttribute("user") != null) {
             ctx.status(200).json("{\"message\":\"You are logged in\"}");
             //ctx.json(session.getAttribute("username"));
-            ctx.json(session.getAttribute("userrole"));
+            //ctx.json(session.getAttribute("userrole"));
 
         } else {
             ctx.status(401).json("{\"error\":\"Not logged in\"}");

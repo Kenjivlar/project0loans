@@ -7,6 +7,9 @@ import org.example.Util.ConnectionDB;
 
 import java.sql.*;
 
+import static org.example.Controller.AuthController.id_user;
+import static org.example.Controller.AuthController.role;
+
 public class UserController {
 
     private final UserService userService;
@@ -50,23 +53,51 @@ public class UserController {
     }
 
     public void getUserById(Context ctx){
-        int id = Integer.parseInt(ctx.pathParam("id"));
-        ctx.json(userService.getUserById(id));
+        if(role.equals("manager")){
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            ctx.json(userService.getUserById(id));
+        } else if (ctx.pathParam("id").equals(String.valueOf(id_user))) {
+            ctx.json(userService.getUserById(id_user));
+        } else{
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }
+
     }
 
 
     public void updateUser(Context ctx){
-        int id = Integer.parseInt(ctx.pathParam("id"));
-        User request = ctx.bodyAsClass(User.class);
+        if(role.equals("manager")){
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            User request = ctx.bodyAsClass(User.class);
 
-        User user = new User();
+            User user = new User();
 
-        user.setId(id);
-        user.setUsername(request.username);
-        user.setUserpass(request.userpass);
+            user.setId(id);
+            user.setUsername(request.username);
+            user.setUserpass(request.userpass);
+            user.setUserrole(request.userrole);
 
-        userService.updateUser(id,user);
+            userService.updateUser(id,user);
 
-        ctx.status(201).json(user);
+            ctx.status(201).json(user);
+
+        } else if (ctx.pathParam("id").equals(String.valueOf(id_user))){
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            User request = ctx.bodyAsClass(User.class);
+
+            User user = new User();
+
+            user.setId(id);
+            user.setUsername(request.username);
+            user.setUserpass(request.userpass);
+            user.setUserrole(role);
+
+            userService.updateUser(id,user);
+
+            ctx.status(201).json(user);
+        } else{
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }
+
     }
 }

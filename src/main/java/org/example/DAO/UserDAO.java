@@ -61,13 +61,14 @@ public class UserDAO {
     public void updateUser(int id,User user){
         ConnectionDB connectionFl = new ConnectionDB();
         try{
-            String sql ="UPDATE users_loans SET username = ?, userpass = ? WHERE id = ?";
+            String sql ="UPDATE users_loans SET username = ?, userpass = ?, userrole = ? WHERE id = ?";
 
             PreparedStatement preparedStatement = connectionFl.connection.prepareStatement(sql);
 
             preparedStatement.setString(1, user.username);
             preparedStatement.setString(2, user.userpass);
-            preparedStatement.setInt(3, id);
+            preparedStatement.setString(3, user.userrole);
+            preparedStatement.setInt(4, id);
             preparedStatement.executeUpdate();
 
         }catch(SQLException e){
