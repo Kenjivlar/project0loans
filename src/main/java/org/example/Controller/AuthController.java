@@ -4,6 +4,7 @@ import io.javalin.http.Context;
 import jakarta.servlet.http.HttpSession;
 import org.example.Model.User;
 import org.example.Util.ConnectionDB;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,9 +27,10 @@ public class AuthController {
             ctx.status(401).json("{\"error\":\"Invalid credentials\"}");
             return;
         }
-
+//
+        boolean passH = BCrypt.checkpw(requestUser.getUserpass(), dbUser.getUserpass());
         // Compare password (plain text for demo)
-        if (!dbUser.getUserpass().equals(requestUser.getUserpass())) {
+        if (!passH) {
             ctx.status(401).json("{\"error\":\"Invalid credentials\"}");
             return;
         }
