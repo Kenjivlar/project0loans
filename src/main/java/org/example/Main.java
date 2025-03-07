@@ -6,14 +6,11 @@ import org.example.Controller.LoanController;
 import org.example.Controller.AuthController;
 import org.example.DAO.LoanDAO;
 import org.example.DAO.UserDAO;
-import org.example.Model.User;
 import org.example.Service.LoanService;
 import org.example.Service.UserService;
 import org.example.Util.ConnectionDB;
 
 import java.sql.*;
-
-import static org.example.Controller.AuthController.role;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -79,7 +76,6 @@ private static final String DROP_TABLES_SQL = """
         Javalin app = Javalin.create(config -> {
         }).start(7001);
 
-        app.get("/", ctx -> ctx.result(role));
         app.post("/register", userController::createUser);
         app.post("/login", AuthController::login);
         app.post("logout", AuthController::logout);
@@ -92,16 +88,6 @@ private static final String DROP_TABLES_SQL = """
         app.put("/loans/{id}", loanController::updateLoan);
         app.put("/loans/{id}/{status}", loanController::updateStatusA);
         app.post("/loans", loanController::createLoan);
-
-        role = "";
-        //User user = new User();
-
-//        String greet = user.getUserpass();
-//        app.get("/", ctx -> ctx.result(greet));
-
-//        User user = new User();
-//
-//        System.out.println(user.getHash());
 
 
     }

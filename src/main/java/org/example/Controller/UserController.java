@@ -1,14 +1,13 @@
 package org.example.Controller;
 
 import io.javalin.http.Context;
+import jakarta.servlet.http.HttpSession;
 import org.example.Model.User;
 import org.example.Service.UserService;
 import org.example.Util.ConnectionDB;
 
 import java.sql.*;
 
-import static org.example.Controller.AuthController.id_user;
-import static org.example.Controller.AuthController.role;
 
 public class UserController {
 
@@ -53,11 +52,16 @@ public class UserController {
     }
 
     public void getUserById(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User user = (User) session.getAttribute("user");
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             ctx.json(userService.getUserById(id));
-        } else if (ctx.pathParam("id").equals(String.valueOf(id_user))) {
-            ctx.json(userService.getUserById(id_user));
+        } else if (ctx.pathParam("id").equals(String.valueOf(user.getId()))) {
+            ctx.json(userService.getUserById(user.getId()));
         } else{
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }
@@ -66,7 +70,12 @@ public class UserController {
 
 
     public void updateUser(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User userS = (User) session.getAttribute("user");
+
+        if(userS == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(userS.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             User request = ctx.bodyAsClass(User.class);
 
@@ -81,7 +90,7 @@ public class UserController {
 
             ctx.status(201).json(user);
 
-        } else if (ctx.pathParam("id").equals(String.valueOf(id_user))){
+        } else if (ctx.pathParam("id").equals(String.valueOf(userS.getId()))){
             int id = Integer.parseInt(ctx.pathParam("id"));
             User request = ctx.bodyAsClass(User.class);
 
@@ -90,7 +99,7 @@ public class UserController {
             user.setId(id);
             user.setUsername(request.username);
             user.setUserpass(request.userpass);
-            user.setUserrole(role);
+            user.setUserrole(userS.getUserrole());
 
             userService.updateUser(id,user);
 

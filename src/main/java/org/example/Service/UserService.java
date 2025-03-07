@@ -29,6 +29,8 @@ public class UserService {
     }
 
     public void updateUser(int id, User user){
+        String hashedPassword = BCrypt.hashpw(user.getUserpass(), BCrypt.gensalt(12));
+        user.setUserpass(hashedPassword);
         userDAO.updateUser(id, user);
     }
 

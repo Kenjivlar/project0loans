@@ -1,23 +1,15 @@
 package org.example.Controller;
 
-//import io.javalin.Javalin;
 import io.javalin.http.Context;
+import jakarta.servlet.http.HttpSession;
 import org.example.Model.Loan;
-//import org.example.Model.User;
-//import org.example.Model.User;
+import org.example.Model.User;
 import org.example.Service.LoanService;
 
 import java.util.List;
-//import java.util.Objects;
-
-import static org.example.Controller.AuthController.id_user;
-import static org.example.Controller.AuthController.role;
-
 
 
 public class LoanController {
-
-    int id_log = id_user;
 
     public LoanService loanService;
 
@@ -26,15 +18,24 @@ public class LoanController {
     }
 
     public void createLoan(Context ctx){
-        if(role.equals("user")){
+        //Here I get the session
+        HttpSession session = ctx.req().getSession();
+        //Here I get the user session
+        User user = (User) session.getAttribute("user");
+
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+            //Here I just get the user role of the session
+        }else if(user.getUserrole().equals("user")){
             Loan request = ctx.bodyAsClass(Loan.class);
 
             if(request.getTitle() == null){
                 ctx.status(400).json("{\"error\":\"Missing the title\"}");
                 return;
             }
-
-            boolean success = loanService.createLoan(id_log, request.getTitle(), request.isCompleted());
+//                          HERE I GET THE id of the user session user.getId()
+            boolean success = loanService.createLoan(user.getId(), request.getTitle(), request.isCompleted());
             if(success){
                 ctx.status(201).json("{\"message\":\"Loan registered successfully\"}");
             }else{
@@ -47,24 +48,34 @@ public class LoanController {
     }
 
     public void getAllLoans(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User user = (User) session.getAttribute("user");
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(user.getUserrole().equals("manager")){
             List<Loan> allLoans = loanService.getAllLoans();
             ctx.json(allLoans);
-        }else if(role.equals("user")){
-            List<Loan> userLoans = loanService.getUserLoans(id_user);
+        }else if(user.getUserrole().equals("user")){
+            List<Loan> userLoans = loanService.getUserLoans(user.getId());
             ctx.json(userLoans);
-        } else {
+        }else {
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }
     }
 
     public void getLoan(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User user = (User) session.getAttribute("user");
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             ctx.json(loanService.getLoanById(id));
-        }else if(role.equals("user")){
+        }else if(user.getUserrole().equals("user")){
             int id = Integer.parseInt(ctx.pathParam("id"));
-            ctx.json(loanService.getLoanById(id, id_user));
+            ctx.json(loanService.getLoanById(id, user.getId()));
         }else{
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }
@@ -78,7 +89,12 @@ public class LoanController {
 //    }
 
     public void updateLoan(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User user = (User) session.getAttribute("user");
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             Loan request = ctx.bodyAsClass(Loan.class);
 
@@ -91,7 +107,7 @@ public class LoanController {
             loanService.updateLoan(id,loan);
 
             ctx.status(201).json(loan);
-        }else if(role.equals("user")){
+        }else if(user.getUserrole().equals("user")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             Loan request = ctx.bodyAsClass(Loan.class);
 
@@ -101,7 +117,7 @@ public class LoanController {
             loan.setTitle(request.title);
             loan.setCompleted(request.completed);
 
-            loanService.updateLoan(id,id_user, loan);
+            loanService.updateLoan(id,user.getId(), loan);
 
             ctx.status(201).json(loan);
         }else{
@@ -111,7 +127,12 @@ public class LoanController {
     }
 
     public void updateStatusA(Context ctx){
-        if(role.equals("manager")){
+        HttpSession session = ctx.req().getSession();
+        User user = (User) session.getAttribute("user");
+
+        if(user == null){
+            ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
+        }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
             String status = ctx.pathParam("status");
 

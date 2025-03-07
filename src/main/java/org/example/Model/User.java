@@ -11,20 +11,6 @@ public String userpass;
 public String userrole;
 
 
-//    BcryptFunction bcrypt = BcryptFunction.getInstance(Bcrypt.B, 12);
-//
-//    Hash hash = Password.hash("Hello there")
-//            .addPepper("shared-secret")
-//            .with(bcrypt);
-//
-//    public Hash getHash() {
-//        return hash;
-//    }
-//
-//    public void setHash(Hash hash) {
-//        this.hash = hash;
-//    }
-
     public User(){
 
 }
@@ -63,12 +49,6 @@ public User(int id, String userName, String userPass, String userRole){
         this.userpass = userpass;
     }
 
-
-//    public void setHash(String userpass){
-//        String bcryptHashString = BCrypt.withDefaults().hashToString(12, userpass.toCharArray());
-//    }
-
-
     public String getUserrole() {
         return userrole;
     }
@@ -77,9 +57,7 @@ public User(int id, String userName, String userPass, String userRole){
         this.userrole = userrole;
     }
 
-//    public void setUserpass(Hash hash) {
-//        this.userpass = String.valueOf(hash);
-//    }
+
     @Override
     public String toString() {
         return "User{" +
