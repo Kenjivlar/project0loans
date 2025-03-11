@@ -5,11 +5,15 @@ import jakarta.servlet.http.HttpSession;
 import org.example.Model.Loan;
 import org.example.Model.User;
 import org.example.Service.LoanService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 
 public class LoanController {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanController.class);
 
     public LoanService loanService;
 
@@ -22,6 +26,8 @@ public class LoanController {
         HttpSession session = ctx.req().getSession();
         //Here I get the user session
         User user = (User) session.getAttribute("user");
+
+        Loan loan = new Loan();
 
 
         if(user == null){
@@ -37,6 +43,8 @@ public class LoanController {
 //                          HERE I GET THE id of the user session user.getId()
             boolean success = loanService.createLoan(user.getId(), request.getTitle(), request.isCompleted());
             if(success){
+                logger.info("User Id: {}", user.getId());
+                logger.info("Loan Created: {}", request.getTitle());
                 ctx.status(201).json("{\"message\":\"Loan registered successfully\"}");
             }else{
                 ctx.status(409).json("{\"error\":\"Creation of the Loan Failed\"}");
@@ -54,9 +62,13 @@ public class LoanController {
         if(user == null){
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }else if(user.getUserrole().equals("manager")){
+            logger.info("RoleM: {}", user.getUserrole());
+            logger.info("LoansM: {}", loanService.getAllLoans());
             List<Loan> allLoans = loanService.getAllLoans();
             ctx.json(allLoans);
         }else if(user.getUserrole().equals("user")){
+            logger.info("RoleU: {}", user.getUserrole());
+            logger.info("LoansU: {}", loanService.getUserLoans(user.getId()));
             List<Loan> userLoans = loanService.getUserLoans(user.getId());
             ctx.json(userLoans);
         }else {
@@ -72,9 +84,11 @@ public class LoanController {
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
+            logger.info("Loan Requested: {}", loanService.getLoanById(id));
             ctx.json(loanService.getLoanById(id));
         }else if(user.getUserrole().equals("user")){
             int id = Integer.parseInt(ctx.pathParam("id"));
+            logger.info("Loan Requested User: {}", loanService.getLoanById(id, user.getId()));
             ctx.json(loanService.getLoanById(id, user.getId()));
         }else{
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
@@ -106,6 +120,8 @@ public class LoanController {
 
             loanService.updateLoan(id,loan);
 
+            logger.info("Loan Updated By Manager: {}", loan);
+
             ctx.status(201).json(loan);
         }else if(user.getUserrole().equals("user")){
             int id = Integer.parseInt(ctx.pathParam("id"));
@@ -118,6 +134,8 @@ public class LoanController {
             loan.setCompleted(request.completed);
 
             loanService.updateLoan(id,user.getId(), loan);
+
+            logger.info("Loan Updated By User: {}", loan);
 
             ctx.status(201).json(loan);
         }else{
@@ -142,6 +160,8 @@ public class LoanController {
             loan.setStatus(status);
 
             loanService.updateStatusA(id,status);
+
+            logger.info("Loan Updated Status: {}", loan);
 
             ctx.status(201).json(loan);
         }else{

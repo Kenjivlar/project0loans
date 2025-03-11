@@ -5,12 +5,15 @@ import jakarta.servlet.http.HttpSession;
 import org.example.Model.User;
 import org.example.Util.ConnectionDB;
 import org.mindrot.jbcrypt.BCrypt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AuthController {
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     public static void login(Context ctx){
         User requestUser = ctx.bodyAsClass(User.class);
@@ -42,7 +45,7 @@ public class AuthController {
         session.setAttribute("role", dbUser.getUserrole());
 //        role = String.valueOf(session.getAttribute("role"));
 //        id_user = (int) session.getAttribute("id user");
-
+        logger.info("User Logged: {}", requestUser.getUsername());
         ctx.status(200).json("{\"message\":\"Login successful\"}");
     }
 
@@ -52,6 +55,7 @@ public class AuthController {
             session.invalidate();
         }
 //        role = "";
+        logger.info("User Logout");
         ctx.status(200).json("{\"message\":\"Logged out\"}");
     }
 
@@ -82,6 +86,7 @@ public class AuthController {
 
         HttpSession session = ctx.req().getSession(false);
         if (session != null && session.getAttribute("user") != null) {
+            logger.info("Check User Logged: {}", session.getAttribute("user"));
             ctx.status(200).json("{\"message\":\"You are logged in\"}");
         } else {
             ctx.status(401).json("{\"error\":\"Not logged in\"}");

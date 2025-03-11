@@ -5,11 +5,15 @@ import jakarta.servlet.http.HttpSession;
 import org.example.Model.User;
 import org.example.Service.UserService;
 import org.example.Util.ConnectionDB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
 
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -31,6 +35,7 @@ public class UserController {
         }
         boolean success = userService.createUser(request.getUsername(), request.getUserpass(), request.getUserrole());
         if(success){
+            logger.info("User Created: {}", request.getUsername());
             ctx.status(201).json("{\"message\":\"User registered successfully\"}");
         }else{
             ctx.status(409).json("{\"error\":\"User already exists\"}");
@@ -59,8 +64,10 @@ public class UserController {
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
         }else if(user.getUserrole().equals("manager")){
             int id = Integer.parseInt(ctx.pathParam("id"));
+            logger.info("User By Id: {}", userService.getUserById(id));
             ctx.json(userService.getUserById(id));
         } else if (ctx.pathParam("id").equals(String.valueOf(user.getId()))) {
+            logger.info("User Id: {}", userService.getUserById(user.getId()));
             ctx.json(userService.getUserById(user.getId()));
         } else{
             ctx.status(403).json("{\"error\":\"User not allow to do the action\"}");
@@ -88,6 +95,8 @@ public class UserController {
 
             userService.updateUser(id,user);
 
+            logger.info("User Updated By Manager: {}", user);
+
             ctx.status(201).json(user);
 
         } else if (ctx.pathParam("id").equals(String.valueOf(userS.getId()))){
@@ -102,6 +111,8 @@ public class UserController {
             user.setUserrole(userS.getUserrole());
 
             userService.updateUser(id,user);
+
+            logger.info("User Updated By User: {}", user);
 
             ctx.status(201).json(user);
         } else{
